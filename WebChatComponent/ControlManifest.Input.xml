@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
+  <control namespace="smc" constructor="WebChatComponent" version="1.0.3" display-name-key="WebChatComponent" description-key="WebChatComponent description" control-type="standard" >
+    <external-service-usage enabled="true">
+      <domain>8a3290a20443ecbc843b564cf35e85.56.environment.api.powerplatform.com</domain>
+    </external-service-usage>
+    <property name="botTokenEndpoint" display-name-key="Bot Token URL" description-key="The token endpoint for the bot (Mobile app channel)" of-type="SingleLine.Text" usage="input" required="true" />
+    <property name="fontSize" display-name-key="Font Size" description-key="The font size as a CSS string (e.g. 20px)" of-type="SingleLine.Text" usage="input" required="true" />
+    <property name="textAlign" display-name-key="Text Align" description-key="The text alignment in the bubble (left, center or right)" of-type="SingleLine.Text" usage="input" required="true" />
+    <property name="styleOptions" display-name-key="Style Options" description-key="The json for styleOptions (see https://github.com/microsoft/BotFramework-WebChat/blob/master/packages/api/src/StyleOptions.ts)" of-type="SingleLine.TextArea" usage="input" required="true" />
+    <resources>
+      <code path="index.ts" order="1"/>
+    </resources>
+  </control>
+</manifest>

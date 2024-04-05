@@ -1,0 +1,1 @@
+https://8a3290a20443ecbc843b564cf35e85.56.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr58c_hsbcCopilot/directline/token?api-version=2022-03-01-preview
