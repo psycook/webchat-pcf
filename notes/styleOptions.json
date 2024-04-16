@@ -7,8 +7,8 @@
     "userAvatarInitials": "MS",
     "hideUploadButton": true,
     "backgroundColor": "#F8F8F8",
-    "bubbleBorderColor" : "#DB0011",
+    "bubbleBorderColor" : "#000000",
     "sendBoxButtonColor": "#DB0011",
-    "transcriptTerminatorFontSize": "24px",
+    "transcriptTerminatorFontSize": "40px",
     "timestampColor" : "#DB0011"
 }
