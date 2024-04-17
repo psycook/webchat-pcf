@@ -1,14 +1,1 @@
-{
-    "accent": "#DB0011",
-    "botAvatarBackgroundColor": "#F8F8F8",
-    "botAvatarImage": "https://companieslogo.com/img/orig/HSBC-9c9da987.png?t=1647980897",
-    "botAvatarInitials": "HB",
-    "userAvatarImage": "https://avatars.githubusercontent.com/u/661465",
-    "userAvatarInitials": "MS",
-    "hideUploadButton": true,
-    "backgroundColor": "#F8F8F8",
-    "bubbleBorderColor" : "#000000",
-    "sendBoxButtonColor": "#DB0011",
-    "transcriptTerminatorFontSize": "40px",
-    "timestampColor" : "#DB0011"
-}
+{ "accent": "#DB0011", "botAvatarBackgroundColor": "#F8F8F8", "botAvatarImage": "https://companieslogo.com/img/orig/HSBC-9c9da987.png?t=1647980897", "botAvatarInitials": "HB", "userAvatarImage": "https://avatars.githubusercontent.com/u/661465", "userAvatarInitials": "MS", "hideUploadButton": true, "backgroundColor": "#F8F8F8", "bubbleBorderColor" : "#000000", "sendBoxButtonColor": "#DB0011", "transcriptTerminatorFontSize": "40px", "timestampColor" : "#DB0011" }

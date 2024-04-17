@@ -8,6 +8,7 @@ export interface IInputs {
     fontSize: ComponentFramework.PropertyTypes.StringProperty;
     textAlign: ComponentFramework.PropertyTypes.StringProperty;
     styleOptions: ComponentFramework.PropertyTypes.StringProperty;
+    enableDebug: ComponentFramework.PropertyTypes.TwoOptionsProperty;
 }
 export interface IOutputs {
 }

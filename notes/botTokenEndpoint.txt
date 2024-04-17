@@ -1,1 +1,6 @@
+
+HSBC
 https://8a3290a20443ecbc843b564cf35e85.56.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr58c_hsbcCopilot/directline/token?api-version=2022-03-01-preview
+
+Contoso Bank
+https://10231c189c2fe920ae584577975fce.1a.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr49b_insuranceVisionCopilot/directline/token?api-version=2022-03-01-preview
