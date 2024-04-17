@@ -1,23 +1,29 @@
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 
+const DEFAULT_LOCALE = 'en';
+const SCRIPT_SRC = 'https://cdn.botframework.com/botframework-webchat/latest/webchat.js';
+const WEBCHAT_ELEMENT_ID = 'webchat';
+const WEBCHAT_ELEMENT_ROLE = 'main';
+const DIRECTLINE_VERSION = 'v3/directline';
+const DIRECTLINE_URL = 'https://europe.directline.botframework.com';
+const CONVERSATION_EVENT_NAME = 'startConversation';
+const CONVERSATION_EVENT_TYPE = 'event';
+
 export class WebChatComponent implements ComponentFramework.StandardControl<IInputs, IOutputs> {
     private _container: HTMLDivElement;
     private _context: ComponentFramework.Context<IInputs>;
     private _notifyOutputChanged: () => void;
-
     private _isScriptLoaded: boolean = false;
     private _isScriptLoading: boolean = false;
     private _webChatElement: HTMLDivElement;
     private _styleOptions: any;
-    private _fontSize: string = "12px";
-    private _textAlign: string = "left";
-    private _botTokenEndpoint: string = "";
-    private _locale: string = 'en';
-    private _token: string = '';
+    private _fontSize: string;
+    private _textAlign: string;
+    private _botTokenEndpoint: string;
+    private _token: string;
     private _directLine: any;
-    private _subscriptionNeedsUpdate: boolean = false;
     private _needsRerender: boolean = false;
-    private _needsResize : boolean = false;
+    private _needsUpdate : boolean = false;
     private _lastKnownWidth: number;
     private _lastKnownHeight: number;
     private _debug: boolean = false;
@@ -30,6 +36,7 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
         this._context = context;
         this._notifyOutputChanged = notifyOutputChanged;
         this._context.mode.trackContainerResize(true);
+        this.createComponent();
     }
 
     public updateView(context: ComponentFramework.Context<IInputs>): void {
@@ -38,22 +45,28 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
         if(this._botTokenEndpoint === "" || this._botTokenEndpoint === "val") return;
     
         if (!this._isScriptLoaded && !this._isScriptLoading) {
-            this.loadWebChatScript().then(() => {
-                if(this._debug) console.log('WebChatComponent: WebChat script loaded');
-
-                //get the token
-
-                //create the subscription
-                
-
-                this.initializeWebChat();
+            this.loadWebChatScript().then(async () => {
+                if(this._debug) console.log('WebChatComponent:updateView() WebChat script loaded');
+                try {
+                    // Get the token using await
+                    const tokenEndpointURL = new URL(this._botTokenEndpoint);
+                    if(this._debug) console.log(`WebChatComponent:updateView() Getting token.`);
+                    this._token = await this.fetchDirectLineToken(tokenEndpointURL);
+                    if(this._debug) console.log(`WebChatComponent:updateView() Direct Line token updated to ${this._token}`);
+                    this.subscribe();
+                } catch (error) {
+                    if(this._debug) console.error('WebChatComponent:updateView() Error fetching Direct Line token', error);
+                }
+                // Create the subscription
+                this.checkForUpdates();
             }).catch((error) => {
-                if(this._debug) console.error('WebChatComponent: Error loading WebChat script', error);
+                if(this._debug) console.error('WebChatComponent:updateView() Error loading WebChat script', error);
             });
         } else if (this._isScriptLoaded) {
-            this.initializeWebChat();
+            this.checkForUpdates();
         }
     }
+    
 
     public getOutputs(): IOutputs {
         return {};
@@ -71,7 +84,6 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
 
         if (this._botTokenEndpoint !== newTokenEndpoint) {
             this._botTokenEndpoint = newTokenEndpoint;
-            this._subscriptionNeedsUpdate = true;
         }
 
         if(this._debug !== debug) {
@@ -81,45 +93,27 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
         if (this._lastKnownWidth !== context.mode.allocatedWidth || this._lastKnownHeight !== context.mode.allocatedHeight) {
             this._lastKnownWidth = context.mode.allocatedWidth;
             this._lastKnownHeight = context.mode.allocatedHeight;
-    
-            // Update web chat dimensions
-            if (this._webChatElement) {
-                this._needsResize = true;
-            }
+            this._needsUpdate = true;
+        }
+
+        if (this._fontSize !== newFontSize || this._textAlign !== newTextAlign) {
+            this._fontSize = newFontSize;
+            this._textAlign = newTextAlign;
+            this._needsUpdate = true;
         }
     
         if (JSON.stringify(this._styleOptions) !== JSON.stringify(newStyleOptions)) {
             this._styleOptions = newStyleOptions;
             this._needsRerender = true;
         }
-    
-        if (this._fontSize !== newFontSize || this._textAlign !== newTextAlign) {
-            this._fontSize = newFontSize;
-            this._textAlign = newTextAlign;
-            this._needsRerender = true;
-        }
     }
 
-    private async initializeWebChat(): Promise<void> {
-        if(this._debug) console.log('WebChatComponent: Initializing WebChat');
+    private checkForUpdates(): void {
+        if(this._debug) console.log('WebChatComponent:checkForUpdates() Checking for updates');
 
-        if (!this._webChatElement) {
-            this.createComponent();
-        } else {
+        if (this._needsUpdate) {
             this.updateComponent();
-        }
-
-        if (this._token === '' || this._subscriptionNeedsUpdate) {
-            try {
-                const tokenEndpointURL = new URL(this._botTokenEndpoint);
-                this._token = await this.fetchDirectLineToken(tokenEndpointURL);
-                if(this._debug) console.log(`WebChatComponent: Direct Line token updated to ${this._token}`);
-            } catch (error) {
-                if(this._debug) console.error('Failed to fetch Direct Line token:', error);
-                return; // Optionally handle error-specific logic, like notifying the user
-            }
-            this.subscribe();
-            this._subscriptionNeedsUpdate = false;
+            this._needsUpdate = false;
         }
     
         if (this._needsRerender) {
@@ -132,7 +126,7 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
         this._isScriptLoading = true;
         return new Promise<void>((resolve, reject) => {
             const script = document.createElement('script');
-            script.src = 'https://cdn.botframework.com/botframework-webchat/latest/webchat.js';
+            script.src = SCRIPT_SRC;
             script.onload = () => {
                 this._isScriptLoaded = true;
                 this._isScriptLoading = false;
@@ -141,7 +135,7 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
             script.onerror = (error) => {
                 this._isScriptLoaded = false;
                 this._isScriptLoading = false;
-                console.error('WebChatComponent: Failed to load WebChat script', error);
+                console.error('WebChatComponent:loadWebChatScript() Failed to load WebChat script', error);
                 reject(new Error('Failed to load script'));
             };
             document.head.appendChild(script);
@@ -150,39 +144,36 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
     
     private createComponent() 
     {
-        if(this._debug) console.log('WebChatComponent: Creating WebChat component');
+        if(this._debug) console.log('WebChatComponent:createComponent() Creating WebChat component');
         this._webChatElement = document.createElement('div');
-        this._webChatElement.id = 'webchat';
-        this._webChatElement.role = 'main';
-        this._webChatElement.style.width = `${this._context.mode.allocatedWidth}px`;
-        this._webChatElement.style.height = `${this._context.mode.allocatedHeight}px`;
-        this._webChatElement.style.fontSize = `${this._fontSize}`;
-        this._webChatElement.style.textAlign = this._textAlign;
+        this._webChatElement.id = WEBCHAT_ELEMENT_ID;
+        this._webChatElement.role = WEBCHAT_ELEMENT_ROLE;
         this._container.appendChild(this._webChatElement);
+        this.updateComponent();
     }
 
     private updateComponent() 
     {
-        if(this._debug) console.log('WebChatComponent: Updating WebChat component');
+        if(this._debug) console.log('WebChatComponent:updateComponent() Updating WebChat component');
         if (this._webChatElement) {
             this._webChatElement.style.width = `${this._lastKnownWidth}px`;
             this._webChatElement.style.height = `${this._lastKnownHeight}px`;
             this._webChatElement.style.fontSize = this._fontSize;
             this._webChatElement.style.textAlign = this._textAlign;
-            this.renderWebChat(); 
+            // this.renderWebChat(); 
+        }
+        else 
+        {
+            console.error('WebChatComponent:updateComponent() WebChat element not found, this should not happen.');
         }
     }
 
     private subscribe() 
     {
-        if(this._debug) console.log('WebChatComponent: Subscribing to Direct Line');
+        if(this._debug) console.log('WebChatComponent:subscribe() Subscribing to Direct Line');
         const token = this._token;
-        const locale = this._locale;
-        this._directLine = (window as any).WebChat.createDirectLine(
-            { domain: new URL('v3/directline', 'https://europe.directline.botframework.com'), token }
-        );
+        this._directLine = (window as any).WebChat.createDirectLine( { domain: new URL(DIRECTLINE_VERSION, DIRECTLINE_URL), token } );
         const directLine = this._directLine;
-        if(this._debug) console.log(`directLine.connectionStatus$: ${JSON.stringify(directLine.connectionStatus$)}`);
         const subscription = directLine.connectionStatus$.subscribe(
         {
             next(value: any) {
@@ -190,9 +181,9 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
                     directLine.postActivity(
                         {
                             localTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                            locale,
-                            name: 'startConversation',
-                            type: 'event'
+                            DEFAULT_LOCALE,
+                            name: CONVERSATION_EVENT_NAME,
+                            type: CONVERSATION_EVENT_TYPE
                         }
                     ).subscribe();
                     subscription.unsubscribe();
@@ -204,18 +195,17 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
 
     private renderWebChat() 
     {
-        if(this._debug) console.log('WebChatComponent: Rendering WebChat');
+        if(this._debug) console.log('WebChatComponent:renderWebChat() Rendering WebChat');
         const directLine = this._directLine;
-        const locale = this._locale;
         const styleOptions = this._styleOptions;
 
         (window as any).WebChat.renderWebChat(
             { 
                 directLine, 
-                locale, 
+                DEFAULT_LOCALE, 
                 styleOptions 
             },
-            document.getElementById('webchat')
+            document.getElementById(WEBCHAT_ELEMENT_ID)
         );
     }
 
@@ -230,7 +220,7 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
             const { token } = await response.json();
             return token;
         } catch (error) {
-            console.error(`WebChatComponent, error getting token direct line: ${JSON.stringify(error instanceof Error ? error.message : error)}`);
+            console.error(`WebChatComponent:fetchDirectLineToken() Error getting token direct line: ${JSON.stringify(error instanceof Error ? error.message : error)}`);
             return '';
         }
     }
