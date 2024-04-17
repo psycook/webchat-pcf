@@ -17,6 +17,7 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
     private _directLine: any;
     private _subscriptionNeedsUpdate: boolean = false;
     private _needsRerender: boolean = false;
+    private _needsResize : boolean = false;
     private _lastKnownWidth: number;
     private _lastKnownHeight: number;
     private _debug: boolean = false;
@@ -33,15 +34,17 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
 
     public updateView(context: ComponentFramework.Context<IInputs>): void {
         this.checkForChanges(context);
-
+    
+        if(this._botTokenEndpoint === "" || this._botTokenEndpoint === "val") return;
+    
         if (!this._isScriptLoaded && !this._isScriptLoading) {
             this.loadWebChatScript().then(() => {
                 if(this._debug) console.log('WebChatComponent: WebChat script loaded');
                 this.initializeWebChat();
-                this._isScriptLoading = false;
-                this._isScriptLoaded = true;
+            }).catch((error) => {
+                if(this._debug) console.error('WebChatComponent: Error loading WebChat script', error);
             });
-        } else if (this._needsRerender) {
+        } else if (this._isScriptLoaded) {
             this.initializeWebChat();
         }
     }
@@ -60,6 +63,11 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
         const newTextAlign = context.parameters.textAlign.raw || 'left';
         const debug = context.parameters.enableDebug.raw || false;
 
+        if (this._botTokenEndpoint !== newTokenEndpoint) {
+            this._botTokenEndpoint = newTokenEndpoint;
+            this._subscriptionNeedsUpdate = true;
+        }
+
         if(this._debug !== debug) {
             this._debug = debug;
         }
@@ -70,13 +78,8 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
     
             // Update web chat dimensions
             if (this._webChatElement) {
-                this.updateComponentSize();
+                this._needsResize = true;
             }
-        }
-    
-        if (this._botTokenEndpoint !== newTokenEndpoint) {
-            this._botTokenEndpoint = newTokenEndpoint;
-            this._subscriptionNeedsUpdate = true;
         }
     
         if (JSON.stringify(this._styleOptions) !== JSON.stringify(newStyleOptions)) {
@@ -97,6 +100,7 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
         if (!this._webChatElement) {
             this.createComponent();
         } else {
+            if(this._needsResize) this.updateComponentSize();
             this.updateComponent();
         }
 
@@ -120,13 +124,20 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
     }
 
     private loadWebChatScript(): Promise<void> {
-        if(this._debug) console.log('WebChatComponent: Loading WebChat script');
+        if (this._debug) console.log('WebChatComponent: Loading WebChat script');
         this._isScriptLoading = true;
         return new Promise<void>((resolve, reject) => {
             const script = document.createElement('script');
             script.src = 'https://cdn.botframework.com/botframework-webchat/latest/webchat.js';
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Failed to load script'));
+            script.onload = () => {
+                this._isScriptLoaded = true;
+                this._isScriptLoading = false;
+                resolve();
+            };
+            script.onerror = () => {
+                this._isScriptLoading = false;
+                reject(new Error('Failed to load script'));
+            };
             document.head.appendChild(script);
         });
     }
