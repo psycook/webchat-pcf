@@ -1,1 +1,17 @@
-{ "accent": "#000000", "botAvatarBackgroundColor": "#F8F8F8", "botAvatarImage": "https://github.com/psycook/images/blob/main/Contoso%20Bank%20Chatbot.png?raw=true", "botAvatarInitials": "HB", "userAvatarImage": "https://github.com/psycook/images/blob/main/Contoso%20Bank%20Customer%20New.png?raw=true", "userAvatarInitials": "MS", "hideUploadButton": true, "backgroundColor": "#F8F8F8", "bubbleBorderColor": "#000000", "sendBoxButtonColor": "#000000", "transcriptTerminatorFontSize": "24px", "timestampColor": "#000000" }
+{
+    "accent": "#000000",
+    "botAvatarBackgroundColor": "#F8F8F8",
+    "botAvatarImage": "https://github.com/psycook/images/blob/main/Contoso%20Bank%20Chatbot.png?raw=true",
+    "botAvatarInitials": "HB",
+    "userAvatarImage": "https://github.com/psycook/images/blob/main/Contoso%20Bank%20Customer%20New.png?raw=true",
+    "userAvatarInitials": "MS",
+    "hideUploadButton": true,
+    "backgroundColor": "#F8F8F8",
+    "bubbleBorderColor": "#000000",
+    "sendBoxButtonColor": "#000000",
+    "transcriptTerminatorFontSize": "24px",
+    "timestampColor": "#000000"
+}
+
+//format required for default-value in the manifest file
+//{ &quot;accent&quot;: &quot;#000000&quot;, &quot;botAvatarBackgroundColor&quot;: &quot;#F8F8F8&quot;, &quot;botAvatarImage&quot;: &quot;https://github.com/psycook/images/blob/main/Contoso%20Bank%20Chatbot.png?raw=true&quot;, &quot;botAvatarInitials&quot;: &quot;HB&quot;, &quot;userAvatarImage&quot;: &quot;https://github.com/psycook/images/blob/main/Contoso%20Bank%20Customer%20New.png?raw=true&quot;, &quot;userAvatarInitials&quot;: &quot;MS&quot;, &quot;hideUploadButton&quot;: true, &quot;backgroundColor&quot;: &quot;#F8F8F8&quot;, &quot;bubbleBorderColor&quot;: &quot;#000000&quot;, &quot;sendBoxButtonColor&quot;: &quot;#000000&quot;, &quot;transcriptTerminatorFontSize&quot;: &quot;24px&quot;, &quot;timestampColor&quot;: &quot;#000000&quot; }

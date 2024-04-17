@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="smc" constructor="WebChatComponent" version="1.0.9" display-name-key="WebChatComponent" description-key="WebChatComponent description" control-type="standard" >
-    <external-service-usage enabled="true">
-      <domain>8a3290a20443ecbc843b564cf35e85.56.environment.api.powerplatform.com</domain>
+  <control namespace="smc" constructor="WebChatComponent" version="1.0.12" display-name-key="WebChatComponent" description-key="WebChatComponent description" control-type="standard" >
+    <external-service-usage enabled="false">
     </external-service-usage>
     <property name="botTokenEndpoint" display-name-key="Bot Token URL" description-key="The token endpoint for the bot (Mobile app channel)" of-type="SingleLine.Text" usage="input" required="true" />
     <property name="fontSize" display-name-key="Font Size" description-key="The font size as a CSS string (e.g. 20px)" of-type="SingleLine.Text" usage="input" required="true" default-value="20px" />

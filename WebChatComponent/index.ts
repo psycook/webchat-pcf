@@ -40,6 +40,12 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
         if (!this._isScriptLoaded && !this._isScriptLoading) {
             this.loadWebChatScript().then(() => {
                 if(this._debug) console.log('WebChatComponent: WebChat script loaded');
+
+                //get the token
+
+                //create the subscription
+                
+
                 this.initializeWebChat();
             }).catch((error) => {
                 if(this._debug) console.error('WebChatComponent: Error loading WebChat script', error);
@@ -100,7 +106,6 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
         if (!this._webChatElement) {
             this.createComponent();
         } else {
-            if(this._needsResize) this.updateComponentSize();
             this.updateComponent();
         }
 
@@ -124,7 +129,6 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
     }
 
     private loadWebChatScript(): Promise<void> {
-        if (this._debug) console.log('WebChatComponent: Loading WebChat script');
         this._isScriptLoading = true;
         return new Promise<void>((resolve, reject) => {
             const script = document.createElement('script');
@@ -134,8 +138,10 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
                 this._isScriptLoading = false;
                 resolve();
             };
-            script.onerror = () => {
+            script.onerror = (error) => {
+                this._isScriptLoaded = false;
                 this._isScriptLoading = false;
+                console.error('WebChatComponent: Failed to load WebChat script', error);
                 reject(new Error('Failed to load script'));
             };
             document.head.appendChild(script);
@@ -158,17 +164,12 @@ export class WebChatComponent implements ComponentFramework.StandardControl<IInp
     private updateComponent() 
     {
         if(this._debug) console.log('WebChatComponent: Updating WebChat component');
-        this._webChatElement.style.fontSize = this._fontSize;
-        this._webChatElement.style.textAlign = this._textAlign;
-        this.renderWebChat();
-    }
-
-    private updateComponentSize(): void {
-        if(this._debug) console.log('WebChatComponent: Updating WebChat component size');
         if (this._webChatElement) {
             this._webChatElement.style.width = `${this._lastKnownWidth}px`;
             this._webChatElement.style.height = `${this._lastKnownHeight}px`;
-            this.renderWebChat(); // Rerender or refresh the chat interface if necessary
+            this._webChatElement.style.fontSize = this._fontSize;
+            this._webChatElement.style.textAlign = this._textAlign;
+            this.renderWebChat(); 
         }
     }
 
